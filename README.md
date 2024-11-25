@@ -1,71 +1,64 @@
 ## Development of a Named Entity Recognition (NER) Prototype Using a Fine-Tuned BART Model and Gradio Framework
-
-### AIM:
+## AIM
 To design and develop a prototype application for Named Entity Recognition (NER) by leveraging a fine-tuned BART model and deploying the application using the Gradio framework for user interaction and evaluation.
 
-### PROBLEM STATEMENT:
-The goal is to develop an application that can accurately recognize and categorize named entities such as persons, organizations, locations, dates, etc., from input text. By fine-tuning a pre-trained BART model specifically for NER tasks, the system should be able to understand contextual relationships and identify relevant entities. The Gradio framework will be used to build a user-friendly interface for real-time interaction and evaluation.
-### DESIGN STEPS:
+## PROBLEM STATEMENT
+Named Entity Recognition (NER) is a fundamental task in Natural Language Processing (NLP) that involves identifying and classifying key entities like names, organizations, locations, and dates in a given text. The goal of this project is to create a user-friendly NER tool that integrates a fine-tuned BART model to demonstrate state-of-the-art capabilities in recognizing entities from textual data.
 
-#### STEP 1: Data Preparation and Model Fine-Tuning
-+ Collect or obtain a labeled NER dataset (e.g., CoNLL-2003).
-+ Preprocess the dataset for tokenization and entity tagging.
-+ Fine-tune a pre-trained BART model on the dataset using Hugging Face's transformers library.
-#### STEP 2: Model Evaluation
-+ Test the fine-tuned BART model on a validation set.
-+ Evaluate performance using standard metrics like F1-score, precision, and recall.
-+ Perform necessary adjustments and re-training if needed.
-#### STEP 3: Gradio Interface Development
-+ Use Gradio to build a simple interface where users can input text.
-+ Integrate the fine-tuned model to process the input and display recognized entities in real-time.
-+ Ensure the interface is intuitive and allows users to submit queries for NER.
 
+## DESIGN STEPS
+### STEP 1: Data Collection and Preprocessing
+ - Collect a labeled dataset for NER tasks. Common datasets include CoNLL-2003, OntoNotes, or a custom dataset.
+ - Download or create a dataset with entities labeled in BIO format (Begin, Inside, Outside).
+ - Preprocess the text data, tokenizing it for compatibility with BART.
+ - Split the data into training, validation, and testing sets.
+
+### STEP 2: Fine-Tuning the BART Model
+ - Use the Hugging Face transformers library.
+ - Load a pre-trained BART model (facebook/bart-base or similar).
+ - Modify the model for token classification by adding a classification head.
+ - Train the model on the preprocessed dataset using a suitable optimizer and scheduler.
+### STEP 3: Model Evaluation
+ - Use metrics like F1-score, precision, and recall for evaluation.
+ - Test the model on unseen data and analyze its performance on different entity types.
+### STEP 4: Application Development Using Gradio
+ - Design the interface with Gradio to allow users to input text and view extracted entities.
+ - Integrate the fine-tuned BART model into the Gradio app.
+ - Define a backend function that processes user input through the model and displays the results.
+### STEP 5: Deployment and Testing
+ - Host the application on a cloud platform like Hugging Face Spaces or Google Colab.
+ - Collect user feedback to improve usability and performance.
 ### PROGRAM:
-
-```
-from transformers import BartTokenizer, BartForConditionalGeneration
-
-# Load BART tokenizer and model
-model_name = "facebook/bart-base"  # Replace with your fine-tuned model path if available
-tokenizer = BartTokenizer.from_pretrained(model_name)
-model = BartForConditionalGeneration.from_pretrained(model_name)
-
-print("Model and tokenizer loaded successfully!")
-def ner_function(input_text):
-    # Tokenize the input text
-    inputs = tokenizer(input_text, return_tensors="pt", truncation=True)
-    
-    # Generate predictions using the model
-    outputs = model.generate(**inputs)
-    
-    # Decode the output
-    decoded_output = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    
-    return f"Recognized Entities: {decoded_output}"
+```python
+from transformers import AutoTokenizer, AutoModelForTokenClassification
+from transformers import pipeline
 import gradio as gr
 
-# Gradio interface for the NER application
-interface = gr.Interface(
+# Load pre-trained BERT NER model and tokenizer
+model_name = "dbmdz/bert-large-cased-finetuned-conll03-english"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForTokenClassification.from_pretrained(model_name)
+
+# Create a pipeline for NER
+ner_pipeline = pipeline("ner", model=model, tokenizer=tokenizer)
+
+# Function to process user input
+def ner_function(text):
+    entities = ner_pipeline(text)
+    return "\n".join([f"{ent['word']} ({ent['entity']})" for ent in entities])
+
+# Gradio Interface
+iface = gr.Interface(
     fn=ner_function,
-    inputs=gr.Textbox(lines=5, label="Enter Text for NER"),
-    outputs=gr.Textbox(label="Named Entities"),
-    title="Named Entity Recognition (NER) with BART",
-    description="Enter a piece of text, and this tool will identify named entities using a fine-tuned BART model."
+    inputs=gr.Textbox(lines=5, label="Input Text"),
+    outputs=gr.Textbox(lines=10, label="Named Entities"),
+    title="NER Demo with Pre-trained Model"
 )
 
-# Launch the interface
-interface.launch()
+iface.launch()
 ```
 ### OUTPUT:
-![image](https://github.com/user-attachments/assets/bfecfd91-a76d-42f4-9493-05565b41f856)
-
-
+![image](https://github.com/user-attachments/assets/2aa100dd-1b13-470e-bdf1-0080bcab077a)
 
 ### RESULT:
-The result of this project is a fully functional Named Entity Recognition (NER) prototype application. The application uses a fine-tuned BART model to accurately identify and classify named entities such as persons, locations, and dates from input text. Through the integration of the Gradio framework, the model is deployed with a user-friendly interface, allowing users to input text and receive real-time entity recognition. The system processes the input text, extracts relevant entities, and displays them in an easily understandable format. The fine-tuned model demonstrates strong performance in recognizing contextual relationships, providing accurate entity categorization. This prototype serves as an effective tool for evaluating and deploying NER capabilities in various natural language processing applications.
-
-
-
-
-
-
+Successfully a prototype application for Named Entity Recognition (NER) by leveraging a fine-tuned BART model and deploying the application using the Gradio framework for user interaction and evaluation.
