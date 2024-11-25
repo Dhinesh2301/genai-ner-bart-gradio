@@ -57,7 +57,8 @@ interface = gr.Interface(
 interface.launch()
 ```
 ### OUTPUT:
-![Uploading image.png…]()
+![image](https://github.com/user-attachments/assets/bfecfd91-a76d-42f4-9493-05565b41f856)
+
 
 
 ### RESULT:
